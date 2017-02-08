@@ -86,6 +86,11 @@ class PrincessFormulaCreator
   }
 
   @Override
+  public PrincessTermType getStringType() {
+    throw new UnsupportedOperationException("Does not support string theory");
+  }
+
+  @Override
   public PrincessTermType getBitvectorType(int pBitwidth) {
     throw new UnsupportedOperationException("Bitvector theory is not supported by Princess");
   }

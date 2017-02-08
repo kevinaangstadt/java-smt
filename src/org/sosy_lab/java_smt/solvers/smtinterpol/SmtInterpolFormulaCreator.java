@@ -96,6 +96,11 @@ class SmtInterpolFormulaCreator
   }
 
   @Override
+  public Sort getStringType() {
+    throw new UnsupportedOperationException("Does not support string theory");
+  }
+
+  @Override
   public Sort getBitvectorType(final int pBitwidth) {
     throw new UnsupportedOperationException(
         "Bitvector theory is not supported " + "by SmtInterpol");

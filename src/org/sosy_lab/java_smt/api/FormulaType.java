@@ -65,6 +65,10 @@ public abstract class FormulaType<T extends Formula> {
     return false;
   }
 
+  public boolean isStringType() {
+    return false;
+  }
+
   @Override
   public abstract String toString();
 
@@ -117,6 +121,24 @@ public abstract class FormulaType<T extends Formula> {
           return "Boolean";
         }
       };
+
+  public static StringType getStringType() {
+    return new StringType();
+  }
+
+  public static final class StringType extends FormulaType<StringFormula> {
+
+    @Override
+    public boolean isStringType() {
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "String";
+    }
+
+  }
 
   public static BitvectorType getBitvectorTypeWithSize(int size) {
     return new BitvectorType(size);

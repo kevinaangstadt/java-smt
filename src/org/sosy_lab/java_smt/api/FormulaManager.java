@@ -52,6 +52,13 @@ public interface FormulaManager {
   BooleanFormulaManager getBooleanFormulaManager();
 
   /**
+   * Returns the String-Theory.
+   *
+   * @throws UnsupportedOperationException If the theory is not supported by the solver
+   */
+  StringFormulaManager getStringFormulaManager();
+
+  /**
    * Returns the Array-Theory.
    *
    * @throws UnsupportedOperationException If the theory is not supported by the solver.

@@ -31,6 +31,7 @@ import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.FormulaType;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 import org.sosy_lab.java_smt.api.NumeralFormula.RationalFormula;
+import org.sosy_lab.java_smt.api.StringFormula;
 
 /**
  * A Formula represented as a TFormulaInfo object.
@@ -89,6 +90,14 @@ abstract class AbstractFormula<TFormulaInfo> implements Formula {
 
     public FormulaType<TE> getElementType() {
       return elementType;
+    }
+  }
+
+  /** Simple StringFormula implemenation */
+  static final class StringFormulaImpl<TFormulaInfo> extends AbstractFormula<TFormulaInfo>
+      implements StringFormula {
+    StringFormulaImpl(TFormulaInfo info) {
+      super(info);
     }
   }
 

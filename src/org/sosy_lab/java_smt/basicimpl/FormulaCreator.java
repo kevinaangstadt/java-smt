@@ -43,6 +43,7 @@ import org.sosy_lab.java_smt.api.FunctionDeclaration;
 import org.sosy_lab.java_smt.api.FunctionDeclarationKind;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 import org.sosy_lab.java_smt.api.NumeralFormula.RationalFormula;
+import org.sosy_lab.java_smt.api.StringFormula;
 import org.sosy_lab.java_smt.api.visitors.DefaultFormulaVisitor;
 import org.sosy_lab.java_smt.api.visitors.FormulaVisitor;
 import org.sosy_lab.java_smt.api.visitors.TraversalProcess;
@@ -53,6 +54,7 @@ import org.sosy_lab.java_smt.basicimpl.AbstractFormula.FloatingPointFormulaImpl;
 import org.sosy_lab.java_smt.basicimpl.AbstractFormula.FloatingPointRoundingModeFormulaImpl;
 import org.sosy_lab.java_smt.basicimpl.AbstractFormula.IntegerFormulaImpl;
 import org.sosy_lab.java_smt.basicimpl.AbstractFormula.RationalFormulaImpl;
+import org.sosy_lab.java_smt.basicimpl.AbstractFormula.StringFormulaImpl;
 
 /**
  * This is a helper class with several methods that are commonly used throughout the basicimpl
@@ -107,6 +109,8 @@ public abstract class FormulaCreator<TFormulaInfo, TType, TEnv, TFuncDecl> {
 
   public abstract TType getArrayType(TType indexType, TType elementType);
 
+  public abstract TType getStringType();
+
   public abstract TFormulaInfo makeVariable(TType type, String varName);
 
   public BooleanFormula encapsulateBoolean(TFormulaInfo pTerm) {
@@ -122,6 +126,11 @@ public abstract class FormulaCreator<TFormulaInfo, TType, TEnv, TFuncDecl> {
   protected FloatingPointFormula encapsulateFloatingPoint(TFormulaInfo pTerm) {
     assert getFormulaType(pTerm).isFloatingPointType();
     return new FloatingPointFormulaImpl<>(pTerm);
+  }
+
+  protected StringFormula encapsulateString(TFormulaInfo pTerm) {
+    assert getFormulaType(pTerm).isStringType();
+    return new StringFormulaImpl<>(pTerm);
   }
 
   protected <TI extends Formula, TE extends Formula> ArrayFormula<TI, TE> encapsulateArray(
@@ -160,6 +169,8 @@ public abstract class FormulaCreator<TFormulaInfo, TType, TEnv, TFuncDecl> {
     } else if (pType.isArrayType()) {
       ArrayFormulaType<?, ?> arrayType = (ArrayFormulaType<?, ?>) pType;
       return (T) encapsulateArray(pTerm, arrayType.getIndexType(), arrayType.getElementType());
+    } else if (pType.isStringType()) {
+      return (T) new StringFormulaImpl<>(pTerm);
     }
     throw new IllegalArgumentException(
         "Cannot create formulas of type " + pType + " in the Solver!");
@@ -203,6 +214,10 @@ public abstract class FormulaCreator<TFormulaInfo, TType, TEnv, TFuncDecl> {
     } else if (formula instanceof BitvectorFormula) {
       throw new UnsupportedOperationException(
           "SMT solvers with support for bitvectors "
+              + "need to overwrite FormulaCreator.getFormulaType()");
+    } else if (formula instanceof StringFormula) {
+      throw new UnsupportedOperationException(
+          "SMT solvers with support for strings "
               + "need to overwrite FormulaCreator.getFormulaType()");
     } else {
       throw new IllegalArgumentException("Formula with unexpected type " + formula.getClass());
@@ -340,4 +355,6 @@ public abstract class FormulaCreator<TFormulaInfo, TType, TEnv, TFuncDecl> {
   }
 
   protected abstract TFuncDecl getBooleanVarDeclarationImpl(TFormulaInfo pTFormulaInfo);
+
+
 }

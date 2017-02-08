@@ -62,6 +62,9 @@ public interface Model extends Iterable<ValueAssignment>, AutoCloseable {
   @Nullable
   BigInteger evaluate(BitvectorFormula f);
 
+  /** Type-safe evaluation for string formulas. */
+  String evaluate(StringFormula f);
+
   /**
    * Iterate over all values present in the model. Note that iterating multiple times may be
    * inefficient for some solvers, it is recommended to use {@link
@@ -175,4 +178,6 @@ public interface Model extends Iterable<ValueAssignment>, AutoCloseable {
       return Objects.hash(name, argumentsInterpretation, value);
     }
   }
+
+
 }
