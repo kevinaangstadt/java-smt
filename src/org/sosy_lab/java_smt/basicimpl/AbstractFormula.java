@@ -31,6 +31,7 @@ import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.FormulaType;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 import org.sosy_lab.java_smt.api.NumeralFormula.RationalFormula;
+import org.sosy_lab.java_smt.api.RegexFormula;
 import org.sosy_lab.java_smt.api.StringFormula;
 
 /**
@@ -93,13 +94,21 @@ abstract class AbstractFormula<TFormulaInfo> implements Formula {
     }
   }
 
-  /** Simple StringFormula implemenation */
+  /** Simple StringFormula implementation */
   static final class StringFormulaImpl<TFormulaInfo> extends AbstractFormula<TFormulaInfo>
       implements StringFormula {
     StringFormulaImpl(TFormulaInfo info) {
       super(info);
     }
   }
+
+  /** Simple RegexFormula implementation */
+  static final class RegexFormulaImpl<TFormulaInfo> extends AbstractFormula<TFormulaInfo>
+  implements RegexFormula {
+    RegexFormulaImpl(TFormulaInfo info) {
+      super(info);
+    }
+}
 
   /** Simple BooleanFormula implementation. Just tracing the size and the sign-treatment */
   static final class BitvectorFormulaImpl<TFormulaInfo> extends AbstractFormula<TFormulaInfo>

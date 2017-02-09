@@ -43,7 +43,8 @@ public class Z3StringFormulaManager extends AbstractStringFormulaManager<Long,Lo
 
   @Override
   protected Long concat(Long pString1, Long pString2) {
-    return Native.mkConcat(z3context, pString1, pString2);
+    long[] lst = {pString1, pString2};
+    return Native.mkSeqConcat(z3context, 2, lst);
   }
 
   @Override
@@ -64,5 +65,67 @@ public class Z3StringFormulaManager extends AbstractStringFormulaManager<Long,Lo
   @Override
   protected Long equal(Long pParam1, Long pParam2) {
     return Native.mkEq(z3context, pParam1, pParam2);
+  }
+
+  @Override
+  protected Long contains(Long pString, Long pSearch) {
+    return Native.mkSeqContains(z3context, pString, pSearch);
+  }
+
+  @Override
+  protected Long startsWith(Long pString, Long pPrefix) {
+    return Native.mkSeqPrefix(z3context, pString, pPrefix);
+  }
+
+  @Override
+  protected Long endsWith(Long pString, Long pSuffix) {
+    return Native.mkSeqSuffix(z3context, pString, pSuffix);
+  }
+
+  @Override
+  protected Long regexIn(Long pString, Long pRegex) {
+    return Native.mkSeqInRe(z3context, pString, pRegex);
+  }
+
+  @Override
+  protected Long length(Long pString) {
+    return Native.mkSeqLength(z3context, pString);
+  }
+
+  @Override
+  protected Long indexOf(Long pString, Long pSearch, Long pInt) {
+    return Native.mkSeqIndex(z3context, pString, pSearch, pInt);
+  }
+
+  @Override
+  protected Long str2Regex(Long pString) {
+    return Native.mkSeqToRe(z3context, pString);
+  }
+
+  @Override
+  protected Long regexStar(Long pRegex) {
+    return Native.mkReStar(z3context, pRegex);
+  }
+
+  @Override
+  protected Long regexPlus(Long pRegex) {
+    return Native.mkRePlus(z3context, pRegex);
+  }
+
+  @Override
+  protected Long regexQuestion(Long pRegex) {
+    return Native.mkReOption(z3context, pRegex);
+  }
+
+  @Override
+  protected Long regexConcat(Long pRegex1, Long pRegex2) {
+    long[] lst = { pRegex1, pRegex2 };
+    return Native.mkReConcat(z3context, 2, lst);
+  }
+
+  @Override
+  protected Long regexUnion(Long pRegex1, Long pRegex2) {
+    long[] lst = { pRegex1, pRegex2 };
+    return Native.mkReUnion(z3context, 2, lst);
   }
 }

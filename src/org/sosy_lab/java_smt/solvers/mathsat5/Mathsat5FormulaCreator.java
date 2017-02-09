@@ -182,6 +182,11 @@ class Mathsat5FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
   }
 
   @Override
+  public Long getRegexType() {
+    throw new UnsupportedOperationException("Does not support string theory");
+  }
+
+  @Override
   public Long getBitvectorType(int pBitwidth) {
     return msat_get_bv_type(getEnv(), pBitwidth);
   }

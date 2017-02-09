@@ -43,6 +43,7 @@ import org.sosy_lab.java_smt.api.FunctionDeclaration;
 import org.sosy_lab.java_smt.api.FunctionDeclarationKind;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 import org.sosy_lab.java_smt.api.NumeralFormula.RationalFormula;
+import org.sosy_lab.java_smt.api.RegexFormula;
 import org.sosy_lab.java_smt.api.StringFormula;
 import org.sosy_lab.java_smt.api.visitors.DefaultFormulaVisitor;
 import org.sosy_lab.java_smt.api.visitors.FormulaVisitor;
@@ -55,6 +56,7 @@ import org.sosy_lab.java_smt.basicimpl.AbstractFormula.FloatingPointRoundingMode
 import org.sosy_lab.java_smt.basicimpl.AbstractFormula.IntegerFormulaImpl;
 import org.sosy_lab.java_smt.basicimpl.AbstractFormula.RationalFormulaImpl;
 import org.sosy_lab.java_smt.basicimpl.AbstractFormula.StringFormulaImpl;
+import org.sosy_lab.java_smt.basicimpl.AbstractFormula.RegexFormulaImpl;
 
 /**
  * This is a helper class with several methods that are commonly used throughout the basicimpl
@@ -111,6 +113,8 @@ public abstract class FormulaCreator<TFormulaInfo, TType, TEnv, TFuncDecl> {
 
   public abstract TType getStringType();
 
+  public abstract TType getRegexType();
+
   public abstract TFormulaInfo makeVariable(TType type, String varName);
 
   public BooleanFormula encapsulateBoolean(TFormulaInfo pTerm) {
@@ -131,6 +135,16 @@ public abstract class FormulaCreator<TFormulaInfo, TType, TEnv, TFuncDecl> {
   protected StringFormula encapsulateString(TFormulaInfo pTerm) {
     assert getFormulaType(pTerm).isStringType();
     return new StringFormulaImpl<>(pTerm);
+  }
+
+  protected IntegerFormula encapsulateInteger(TFormulaInfo pTerm) {
+    assert getFormulaType(pTerm).isIntegerType();
+    return new IntegerFormulaImpl<>(pTerm);
+  }
+
+  protected RegexFormula encapsulateRegex(TFormulaInfo pTerm) {
+    assert getFormulaType(pTerm).isRegexType();
+    return new RegexFormulaImpl<>(pTerm);
   }
 
   protected <TI extends Formula, TE extends Formula> ArrayFormula<TI, TE> encapsulateArray(
@@ -171,6 +185,8 @@ public abstract class FormulaCreator<TFormulaInfo, TType, TEnv, TFuncDecl> {
       return (T) encapsulateArray(pTerm, arrayType.getIndexType(), arrayType.getElementType());
     } else if (pType.isStringType()) {
       return (T) new StringFormulaImpl<>(pTerm);
+    } else if (pType.isRegexType()) {
+      return (T) new RegexFormulaImpl<>(pTerm);
     }
     throw new IllegalArgumentException(
         "Cannot create formulas of type " + pType + " in the Solver!");
@@ -218,6 +234,10 @@ public abstract class FormulaCreator<TFormulaInfo, TType, TEnv, TFuncDecl> {
     } else if (formula instanceof StringFormula) {
       throw new UnsupportedOperationException(
           "SMT solvers with support for strings "
+              + "need to overwrite FormulaCreator.getFormulaType()");
+    } else if (formula instanceof RegexFormula) {
+      throw new UnsupportedOperationException(
+          "SMT solvers with support for regexes "
               + "need to overwrite FormulaCreator.getFormulaType()");
     } else {
       throw new IllegalArgumentException("Formula with unexpected type " + formula.getClass());

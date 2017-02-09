@@ -69,6 +69,10 @@ public abstract class FormulaType<T extends Formula> {
     return false;
   }
 
+  public boolean isRegexType() {
+    return false;
+  }
+
   @Override
   public abstract String toString();
 
@@ -138,6 +142,23 @@ public abstract class FormulaType<T extends Formula> {
       return "String";
     }
 
+  }
+
+  public static RegexType getRegexType() {
+    return new RegexType();
+  }
+
+  public static final class RegexType extends FormulaType<RegexFormula> {
+
+    @Override
+    public boolean isRegexType() {
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "Regex";
+    }
   }
 
   public static BitvectorType getBitvectorTypeWithSize(int size) {

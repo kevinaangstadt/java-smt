@@ -57,7 +57,9 @@ import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.FormulaType;
 import org.sosy_lab.java_smt.api.FormulaType.ArrayFormulaType;
 import org.sosy_lab.java_smt.api.FunctionDeclarationKind;
+import org.sosy_lab.java_smt.api.NumeralFormula;
 import org.sosy_lab.java_smt.api.QuantifiedFormulaManager.Quantifier;
+import org.sosy_lab.java_smt.api.RegexFormula;
 import org.sosy_lab.java_smt.api.SolverException;
 import org.sosy_lab.java_smt.api.StringFormula;
 import org.sosy_lab.java_smt.api.visitors.FormulaVisitor;
@@ -70,6 +72,7 @@ import org.sosy_lab.java_smt.solvers.z3.Z3Formula.Z3FloatingPointFormula;
 import org.sosy_lab.java_smt.solvers.z3.Z3Formula.Z3FloatingPointRoundingModeFormula;
 import org.sosy_lab.java_smt.solvers.z3.Z3Formula.Z3IntegerFormula;
 import org.sosy_lab.java_smt.solvers.z3.Z3Formula.Z3RationalFormula;
+import org.sosy_lab.java_smt.solvers.z3.Z3Formula.Z3RegexFormula;
 import org.sosy_lab.java_smt.solvers.z3.Z3Formula.Z3StringFormula;
 
 @Options(prefix = "solver.z3")
@@ -185,10 +188,11 @@ class Z3FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
         return FormulaType.FloatingPointRoundingModeType;
       case Z3_SEQ_SORT:
         return FormulaType.getStringType();
+      case Z3_RE_SORT:
+        return FormulaType.getRegexType();
       case Z3_DATATYPE_SORT:
       case Z3_RELATION_SORT:
       case Z3_FINITE_DOMAIN_SORT:
-      case Z3_RE_SORT:
       case Z3_UNKNOWN_SORT:
       case Z3_UNINTERPRETED_SORT:
         // TODO: support for remaining sorts.
@@ -234,6 +238,20 @@ class Z3FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
     assert getFormulaType(pTerm).isStringType();
     cleanupReferences();
     return storePhantomReference(new Z3StringFormula(getEnv(), pTerm), pTerm);
+  }
+
+  @Override
+  protected RegexFormula encapsulateRegex(Long pTerm) {
+    assert getFormulaType(pTerm).isRegexType();
+    cleanupReferences();
+    return storePhantomReference(new Z3RegexFormula(getEnv(), pTerm), pTerm);
+  }
+
+  @Override
+  protected NumeralFormula.IntegerFormula encapsulateInteger(Long pTerm) {
+    assert getFormulaType(pTerm).isIntegerType();
+    cleanupReferences();
+    return storePhantomReference(new Z3IntegerFormula(getEnv(), pTerm), pTerm);
   }
 
   private <T extends Z3Formula> T storePhantomReference(T out, Long pTerm) {
@@ -315,6 +333,14 @@ class Z3FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
     Native.incRef(getEnv(), Native.sortToAst(getEnv(), sSort));
     return sSort;
   }
+
+  @Override
+  public Long getRegexType() {
+    long reSort = Native.mkReSort(getEnv(), Native.mkStringSort(getEnv()));
+    Native.incRef(getEnv(), Native.sortToAst(getEnv(), reSort));
+    return reSort;
+  }
+
 
   @Override
   public Long getBitvectorType(int pBitwidth) {
