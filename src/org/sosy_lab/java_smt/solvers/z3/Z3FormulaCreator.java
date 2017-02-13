@@ -186,13 +186,14 @@ class Z3FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
             Native.fpaGetEbits(z3context, pSort), Native.fpaGetSbits(z3context, pSort));
       case Z3_ROUNDING_MODE_SORT:
         return FormulaType.FloatingPointRoundingModeType;
-      case Z3_SEQ_SORT:
+      case Z3_STRING_SORT:
         return FormulaType.getStringType();
       case Z3_RE_SORT:
         return FormulaType.getRegexType();
       case Z3_DATATYPE_SORT:
       case Z3_RELATION_SORT:
       case Z3_FINITE_DOMAIN_SORT:
+      case Z3_SEQ_SORT:
       case Z3_UNKNOWN_SORT:
       case Z3_UNINTERPRETED_SORT:
         // TODO: support for remaining sorts.
@@ -290,6 +291,8 @@ class Z3FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
           storePhantomReference(
               new Z3ArrayFormula<>(getEnv(), pTerm, arrFt.getIndexType(), arrFt.getElementType()),
               pTerm);
+    } else if (pType.isStringType()) {
+      return (T) storePhantomReference(new Z3StringFormula(getEnv(), pTerm), pTerm);
     }
 
     throw new IllegalArgumentException("Cannot create formulas of type " + pType + " in Z3");
@@ -329,14 +332,14 @@ class Z3FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
 
   @Override
   public Long getStringType() {
-    long sSort = Native.mkStringSort(getEnv());
+    long sSort = Native.mkStrSort(getEnv());
     Native.incRef(getEnv(), Native.sortToAst(getEnv(), sSort));
     return sSort;
   }
 
   @Override
   public Long getRegexType() {
-    long reSort = Native.mkReSort(getEnv(), Native.mkStringSort(getEnv()));
+    long reSort = Native.mkReSort(getEnv(), Native.mkStrSort(getEnv()));
     Native.incRef(getEnv(), Native.sortToAst(getEnv(), reSort));
     return reSort;
   }
@@ -554,7 +557,7 @@ class Z3FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
   public boolean isConstant(long value) {
     return Native.isNumeralAst(environment, value)
         || Native.isAlgebraicNumber(environment, value)
-        || Native.isString(environment, value)
+        || Native.isStr(environment, value)
         || isOP(environment, value, Z3_decl_kind.Z3_OP_TRUE.toInt())
         || isOP(environment, value, Z3_decl_kind.Z3_OP_FALSE.toInt());
   }
@@ -589,7 +592,7 @@ class Z3FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
         // Converting to Rational first.
         return convertValue(Native.simplify(environment, Native.mkFpaToReal(environment, value)));
       } else if (type.isStringType()) {
-        return new String(Native.getString(environment, value));
+        return new String(Native.getStr(environment, value));
       }  else {
 
         // Explicitly crash on unknown type.

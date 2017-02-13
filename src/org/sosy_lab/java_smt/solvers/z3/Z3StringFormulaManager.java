@@ -32,7 +32,7 @@ public class Z3StringFormulaManager extends AbstractStringFormulaManager<Long,Lo
 
   @Override
   protected Long internalMakeString(String pName) {
-    return Native.mkString(z3context, pName);
+    return Native.mkStr(z3context, pName);
   }
 
   @Override
@@ -43,23 +43,22 @@ public class Z3StringFormulaManager extends AbstractStringFormulaManager<Long,Lo
 
   @Override
   protected Long concat(Long pString1, Long pString2) {
-    long[] lst = {pString1, pString2};
-    return Native.mkSeqConcat(z3context, 2, lst);
+    return Native.mkStrConcat(z3context, pString1, pString2);
   }
 
   @Override
   protected Long substring(Long pString, Long pStart, Long pLength) {
-    return Native.mkSeqExtract(z3context, pString, pStart, pLength);
+    return Native.mkStrSubstr(z3context, pString, pStart, pLength);
   }
 
   @Override
   protected Long replace(Long pString, Long pFind, Long pReplace) {
-    return Native.mkSeqReplace(z3context, pString, pFind, pReplace);
+    return Native.mkStrReplace(z3context, pString, pFind, pReplace);
   }
 
   @Override
   protected Long charAt(Long pArray, Long pIndex) {
-    return Native.mkSeqAt(z3context,pArray,pIndex);
+    return Native.mkStrAt(z3context,pArray,pIndex);
   }
 
   @Override
@@ -69,63 +68,72 @@ public class Z3StringFormulaManager extends AbstractStringFormulaManager<Long,Lo
 
   @Override
   protected Long contains(Long pString, Long pSearch) {
-    return Native.mkSeqContains(z3context, pString, pSearch);
+    return Native.mkStrContains(z3context, pString, pSearch);
   }
 
   @Override
   protected Long startsWith(Long pString, Long pPrefix) {
-    return Native.mkSeqPrefix(z3context, pString, pPrefix);
+    return Native.mkStrPrefixof(z3context, pString, pPrefix);
   }
 
   @Override
   protected Long endsWith(Long pString, Long pSuffix) {
-    return Native.mkSeqSuffix(z3context, pString, pSuffix);
+    return Native.mkStrSuffixof(z3context, pString, pSuffix);
   }
 
   @Override
   protected Long regexIn(Long pString, Long pRegex) {
-    return Native.mkSeqInRe(z3context, pString, pRegex);
+    return Native.mkStrInRegex(z3context, pString, pRegex);
   }
 
   @Override
   protected Long length(Long pString) {
-    return Native.mkSeqLength(z3context, pString);
+    return Native.mkStrLength(z3context, pString);
   }
 
   @Override
   protected Long indexOf(Long pString, Long pSearch, Long pInt) {
-    return Native.mkSeqIndex(z3context, pString, pSearch, pInt);
+    return Native.mkStrIndexof(z3context, pString, pSearch, pInt);
   }
 
   @Override
-  protected Long str2Regex(Long pString) {
-    return Native.mkSeqToRe(z3context, pString);
+  protected Long str2RegexImpl(String pString) {
+    return Native.mkStrToRegex(z3context, pString);
   }
 
   @Override
   protected Long regexStar(Long pRegex) {
-    return Native.mkReStar(z3context, pRegex);
+    return Native.mkRegexStar(z3context, pRegex);
   }
 
   @Override
   protected Long regexPlus(Long pRegex) {
-    return Native.mkRePlus(z3context, pRegex);
+    return Native.mkRegexPlus(z3context, pRegex);
   }
 
   @Override
   protected Long regexQuestion(Long pRegex) {
-    return Native.mkReOption(z3context, pRegex);
+    /*
+     * Apparently this doesn't exist, so I'm going to implement it myself
+     */
+    return Native.mkRegexUnion(z3context,
+        pRegex,
+        Native.mkStrToRegex(z3context, "")
+    );
   }
 
   @Override
   protected Long regexConcat(Long pRegex1, Long pRegex2) {
-    long[] lst = { pRegex1, pRegex2 };
-    return Native.mkReConcat(z3context, 2, lst);
+    return Native.mkRegexConcat(z3context, pRegex1, pRegex2);
   }
 
   @Override
   protected Long regexUnion(Long pRegex1, Long pRegex2) {
-    long[] lst = { pRegex1, pRegex2 };
-    return Native.mkReUnion(z3context, 2, lst);
+    return Native.mkRegexUnion(z3context, pRegex1, pRegex2);
+  }
+
+  @Override
+  protected Long regexRangeImpl(String pStart, String pEnd) {
+    return Native.mkRegexRange(z3context, pStart, pEnd);
   }
 }

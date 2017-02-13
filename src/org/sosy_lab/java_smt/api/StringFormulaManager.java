@@ -131,7 +131,7 @@ public interface StringFormulaManager {
    * @param pString match this exactly
    * @return the Regex Formula
    */
-  RegexFormula str2Regex(StringFormula pString);
+  RegexFormula str2Regex(String pString);
 
   /**
    * Kleene star
@@ -170,6 +170,14 @@ public interface StringFormulaManager {
    * @return R_1 | R_2
    */
   RegexFormula regexUnion(RegexFormula pRegex1, RegexFormula pRegex2);
+
+  /**
+   * Make a rexular expression character class range
+   * @param pStart the starting character
+   * @param pEnd the ending character
+   * @return a regular expression formula representing the range
+   */
+  RegexFormula regexRange(String pStart, String pEnd);
 
   /**
    * Determine if two strings are equal

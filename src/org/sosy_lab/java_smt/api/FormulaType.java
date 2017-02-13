@@ -142,6 +142,19 @@ public abstract class FormulaType<T extends Formula> {
       return "String";
     }
 
+    @Override
+    public boolean equals(Object pObj) {
+      if(pObj == this) {
+        return true;
+      }
+      return pObj instanceof StringType;
+    }
+
+    @Override
+    public int hashCode() {
+      return 47;
+    }
+
   }
 
   public static RegexType getRegexType() {
@@ -158,6 +171,19 @@ public abstract class FormulaType<T extends Formula> {
     @Override
     public String toString() {
       return "Regex";
+    }
+
+    @Override
+    public boolean equals(Object pObj) {
+      if(pObj == this) {
+        return true;
+      }
+      return pObj instanceof RegexType;
+    }
+
+    @Override
+    public int hashCode() {
+      return 29;
     }
   }
 
@@ -354,6 +380,8 @@ public abstract class FormulaType<T extends Formula> {
       return RationalType;
     } else if (FloatingPointRoundingModeType.toString().equals(t)) {
       return FloatingPointRoundingModeType;
+    } else if(t.equals("String")) {
+      return FormulaType.getStringType();
     } else if (t.startsWith("FloatingPoint<")) {
       // FloatingPoint<exp=11,mant=52>
       String[] exman = t.substring(14, t.length() - 1).split(",");

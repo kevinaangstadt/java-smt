@@ -68,6 +68,8 @@ abstract class AbstractBaseFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl> 
       TType indexType = toSolverType(arrType.getIndexType());
       TType elementType = toSolverType(arrType.getElementType());
       t = getFormulaCreator().getArrayType(indexType, elementType);
+    } else if (formulaType.isStringType()) {
+      t = getFormulaCreator().getStringType();
     } else {
       throw new IllegalArgumentException("Not supported interface");
     }

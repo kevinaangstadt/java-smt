@@ -148,11 +148,11 @@ public abstract class AbstractStringFormulaManager<TFormulaInfo, TType, TEnv, TF
   protected abstract TFormulaInfo indexOf(TFormulaInfo pString, TFormulaInfo pSearch, TFormulaInfo pInt);
 
   @Override
-  public RegexFormula str2Regex(StringFormula pString) {
-    return wrapRegex(str2Regex(extractInfo(pString)));
+  public RegexFormula str2Regex(String pString) {
+    return wrapRegex(str2RegexImpl(pString));
   }
 
-  protected abstract TFormulaInfo str2Regex(TFormulaInfo pString);
+  protected abstract TFormulaInfo str2RegexImpl(String pString);
 
   @Override
   public RegexFormula regexStar(RegexFormula pRegex) {
@@ -188,5 +188,12 @@ public abstract class AbstractStringFormulaManager<TFormulaInfo, TType, TEnv, TF
   }
 
   protected abstract TFormulaInfo regexUnion(TFormulaInfo pRegex1, TFormulaInfo pRegex2);
+
+  @Override
+  public RegexFormula regexRange(String pStart, String pEnd) {
+    return wrapRegex(regexRangeImpl(pStart, pEnd));
+  }
+
+  protected abstract TFormulaInfo regexRangeImpl(String pStart, String pEnd);
 
 }
