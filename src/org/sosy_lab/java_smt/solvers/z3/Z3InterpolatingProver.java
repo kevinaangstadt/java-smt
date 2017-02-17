@@ -210,14 +210,14 @@ class Z3InterpolatingProver extends Z3SolverBasedProver<Long>
               Level.WARNING, e, "Could not dump interpolation query to file");
         }
       }
-      logger.logf(Level.INFO, "Interpolation call #%d", ++interpolationCount);
+      //logger.logf(Level.INFO, "Interpolation call #%d", ++interpolationCount);
       interpolationResult =
           Native.getInterpolant(
               z3context,
               proof, //refutation of premises := proof
               root, // last element is end of chain (root of tree), pattern := interpolation tree
               Native.mkParams(z3context));
-      logger.logf(Level.INFO, "Returned from interpolation call %d", interpolationCount);
+      //logger.logf(Level.INFO, "Returned from interpolation call %d", interpolationCount);
     } catch (Z3Exception e) {
       if (dumpFailedInterpolationQueries != null && !creator.shutdownNotifier.shouldShutdown()) {
         try (Writer dumpFile =

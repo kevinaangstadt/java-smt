@@ -70,6 +70,8 @@ abstract class AbstractBaseFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl> 
       t = getFormulaCreator().getArrayType(indexType, elementType);
     } else if (formulaType.isStringType()) {
       t = getFormulaCreator().getStringType();
+    } else if (formulaType.isRegexType()) {
+      t = getFormulaCreator().getRegexType();
     } else {
       throw new IllegalArgumentException("Not supported interface");
     }

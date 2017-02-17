@@ -189,12 +189,12 @@ class Z3FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
       case Z3_STRING_SORT:
         return FormulaType.getStringType();
       case Z3_REGEX_SORT:
+      case Z3_RE_SORT:
         return FormulaType.getRegexType();
       case Z3_DATATYPE_SORT:
       case Z3_RELATION_SORT:
       case Z3_FINITE_DOMAIN_SORT:
       case Z3_SEQ_SORT:
-      case Z3_RE_SORT:
       case Z3_UNKNOWN_SORT:
       case Z3_UNINTERPRETED_SORT:
         // TODO: support for remaining sorts.

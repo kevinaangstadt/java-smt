@@ -74,6 +74,7 @@ final class Z3SolverContext extends AbstractSolverContext {
 
   @Option(
       secure = true,
+      name="interpolants.dump",
       description = "Dump all interpolation queries to this file in SMTLib2 format"
   )
   @FileOption(Type.OUTPUT_FILE)
