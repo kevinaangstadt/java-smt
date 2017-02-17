@@ -54,16 +54,23 @@ class Z3InterpolatingProver extends Z3SolverBasedProver<Long>
   private final LogManager logger;
 
   private final @Nullable PathCounterTemplate dumpFailedInterpolationQueries;
+  private final @Nullable PathCounterTemplate dumpAllInterpolationQueries;
   private final Deque<List<Long>> assertedFormulas = new ArrayDeque<>();
+
+  private int interpolationCount;
 
   Z3InterpolatingProver(
       Z3FormulaCreator creator,
       long z3params,
       LogManager pLogger,
-      @Nullable PathCounterTemplate pDumpFailedInterpolationQueries) {
+      @Nullable PathCounterTemplate pDumpFailedInterpolationQueries,
+      @Nullable PathCounterTemplate pDumpAllInterpolationQueries) {
     super(creator, z3params);
     logger = pLogger;
     dumpFailedInterpolationQueries = pDumpFailedInterpolationQueries;
+    dumpAllInterpolationQueries = pDumpAllInterpolationQueries;
+
+    interpolationCount = 0;
 
     // add basic level, needed for addConstraints(f) without previous push()
     assertedFormulas.push(new ArrayList<>());
@@ -191,12 +198,26 @@ class Z3InterpolatingProver extends Z3SolverBasedProver<Long>
 
     long interpolationResult;
     try {
+      if (dumpAllInterpolationQueries != null) {
+        try (Writer dumpFile =
+            MoreFiles.openOutputFile(dumpAllInterpolationQueries.getFreshPath(), StandardCharsets.UTF_8)) {
+          dumpFile.write(Native.solverToString(z3context, z3solver));
+          dumpFile.write("\n(compute-interpolant ");
+          dumpFile.write(Native.astToString(z3context, root));
+          dumpFile.write(")\n");
+        } catch (IOException e) {
+          logger.logUserException(
+              Level.WARNING, e, "Could not dump interpolation query to file");
+        }
+      }
+      logger.logf(Level.INFO, "Interpolation call #%d", ++interpolationCount);
       interpolationResult =
           Native.getInterpolant(
               z3context,
               proof, //refutation of premises := proof
               root, // last element is end of chain (root of tree), pattern := interpolation tree
               Native.mkParams(z3context));
+      logger.logf(Level.INFO, "Returned from interpolation call %d", interpolationCount);
     } catch (Z3Exception e) {
       if (dumpFailedInterpolationQueries != null && !creator.shutdownNotifier.shouldShutdown()) {
         try (Writer dumpFile =

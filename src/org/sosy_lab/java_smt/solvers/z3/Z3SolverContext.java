@@ -72,6 +72,14 @@ final class Z3SolverContext extends AbstractSolverContext {
   private @Nullable PathCounterTemplate dumpFailedInterpolationQueries =
       PathCounterTemplate.ofFormatString("z3-failed-interpolation-query.%d.smt2");
 
+  @Option(
+      secure = true,
+      description = "Dump all interpolation queries to this file in SMTLib2 format"
+  )
+  @FileOption(Type.OUTPUT_FILE)
+  private @Nullable PathCounterTemplate dumpAllInterpolationQueries =
+      PathCounterTemplate.ofFormatString("z3-interpolation-query.%d.smt");
+
   private final ShutdownRequestListener interruptListener;
   private final long z3params;
   private final LogManager logger;
@@ -237,7 +245,7 @@ final class Z3SolverContext extends AbstractSolverContext {
 
   @Override
   protected InterpolatingProverEnvironment<?> newProverEnvironmentWithInterpolation0() {
-    return new Z3InterpolatingProver(creator, z3params, logger, dumpFailedInterpolationQueries);
+    return new Z3InterpolatingProver(creator, z3params, logger, dumpFailedInterpolationQueries, dumpAllInterpolationQueries);
   }
 
   @Override
