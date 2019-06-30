@@ -233,6 +233,16 @@ class Mathsat5FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
     return msat_get_fp_type(getEnv(), pType.getExponentSize(), pType.getMantissaSize());
   }
 
+  @Override
+  public Long getStringType() {
+    throw new UnsupportedOperationException("Does not support string theory");
+  }
+
+  @Override
+  public Long getRegexType() {
+    throw new UnsupportedOperationException("Does not support string theory");
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public <T extends Formula> T encapsulate(FormulaType<T> pType, Long pTerm) {

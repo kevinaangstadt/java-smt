@@ -205,6 +205,7 @@ final class Z3SolverContext extends AbstractSolverContext {
         new Z3FloatingPointFormulaManager(creator, pFloatingPointRoundingMode);
     Z3QuantifiedFormulaManager quantifierManager = new Z3QuantifiedFormulaManager(creator);
     Z3ArrayFormulaManager arrayManager = new Z3ArrayFormulaManager(creator);
+    Z3StringFormulaManager stringManager = new Z3StringFormulaManager(creator);
 
     // Set the custom error handling
     // which will throw Z3Exception
@@ -221,7 +222,8 @@ final class Z3SolverContext extends AbstractSolverContext {
             bitvectorTheory,
             floatingPointTheory,
             quantifierManager,
-            arrayManager);
+            arrayManager,
+            stringManager);
     return new Z3SolverContext(
         creator, config, z3params, interruptListener, pShutdownNotifier, logger, manager);
   }

@@ -69,6 +69,14 @@ public abstract class FormulaType<T extends Formula> {
     return false;
   }
 
+  public boolean isStringType() {
+    return false;
+  }
+
+  public boolean isRegexType() {
+    return false;
+  }
+
   @Override
   public abstract String toString();
 
@@ -310,6 +318,67 @@ public abstract class FormulaType<T extends Formula> {
     }
   }
 
+  public static StringType getStringType() {
+    return new StringType();
+  }
+
+  public static final class StringType extends FormulaType<StringFormula> {
+
+    @Override
+    public boolean isStringType() {
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "String";
+    }
+
+    @Override
+    public boolean equals(Object pObj) {
+      if (pObj == this) {
+        return true;
+      }
+      return pObj instanceof StringType;
+    }
+
+    @Override
+    public int hashCode() {
+      return 47;
+    }
+
+  }
+
+  public static RegexType getRegexType() {
+    return new RegexType();
+  }
+
+  public static final class RegexType extends FormulaType<RegexFormula> {
+
+    @Override
+    public boolean isRegexType() {
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "Regex";
+    }
+
+    @Override
+    public boolean equals(Object pObj) {
+      if (pObj == this) {
+        return true;
+      }
+      return pObj instanceof RegexType;
+    }
+
+    @Override
+    public int hashCode() {
+      return 29;
+    }
+  }
+
   /**
    * Parse a string and return the corresponding type. This method is the counterpart of {@link
    * #toString()}.
@@ -332,6 +401,10 @@ public abstract class FormulaType<T extends Formula> {
       // Bitvector<32>
       return FormulaType.getBitvectorTypeWithSize(
           Integer.parseInt(t.substring(10, t.length() - 1)));
+    } else if (t.equals("String")) {
+      return FormulaType.getStringType();
+    } else if (t.equals("Regex")) {
+      return FormulaType.getRegexType();
     } else {
       throw new AssertionError("unknown type:" + t);
     }

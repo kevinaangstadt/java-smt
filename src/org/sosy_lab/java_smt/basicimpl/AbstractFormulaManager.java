@@ -46,6 +46,7 @@ import org.sosy_lab.java_smt.api.FormulaType.FloatingPointType;
 import org.sosy_lab.java_smt.api.FunctionDeclaration;
 import org.sosy_lab.java_smt.api.IntegerFormulaManager;
 import org.sosy_lab.java_smt.api.RationalFormulaManager;
+import org.sosy_lab.java_smt.api.StringFormulaManager;
 import org.sosy_lab.java_smt.api.Tactic;
 import org.sosy_lab.java_smt.api.visitors.FormulaTransformationVisitor;
 import org.sosy_lab.java_smt.api.visitors.FormulaVisitor;
@@ -124,6 +125,8 @@ public abstract class AbstractFormulaManager<TFormulaInfo, TType, TEnv, TFuncDec
   private final @Nullable AbstractQuantifiedFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl>
       quantifiedManager;
 
+  private final @Nullable AbstractStringFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl> stringManager;
+
   private final FormulaCreator<TFormulaInfo, TType, TEnv, TFuncDecl> formulaCreator;
 
   /** Builds a solver from the given theory implementations. */
@@ -141,8 +144,10 @@ public abstract class AbstractFormulaManager<TFormulaInfo, TType, TEnv, TFuncDec
               floatingPointManager,
       @Nullable
           AbstractQuantifiedFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl> quantifiedManager,
-      @Nullable AbstractArrayFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl> arrayManager) {
+      @Nullable AbstractArrayFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl> arrayManager,
+      @Nullable AbstractStringFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl> stringManager) {
 
+    this.stringManager = stringManager;
     this.arrayManager = arrayManager;
     this.quantifiedManager = quantifiedManager;
     this.functionManager = checkNotNull(functionManager, "function manager needed");
@@ -160,6 +165,29 @@ public abstract class AbstractFormulaManager<TFormulaInfo, TType, TEnv, TFuncDec
             && floatingPointManager.getFormulaCreator() != formulaCreator)) {
       throw new IllegalArgumentException("The creator instances must match across the managers!");
     }
+  }
+
+  protected AbstractFormulaManager(
+      FormulaCreator<TFormulaInfo, TType, TEnv, TFuncDecl> pFormulaCreator,
+      AbstractUFManager<TFormulaInfo, ?, TType, TEnv> functionManager,
+      AbstractBooleanFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl> booleanManager,
+      @Nullable IntegerFormulaManager pIntegerManager,
+      @Nullable RationalFormulaManager pRationalManager,
+      @Nullable AbstractBitvectorFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl> bitvectorManager,
+      @Nullable AbstractFloatingPointFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl> floatingPointManager,
+      @Nullable AbstractQuantifiedFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl> quantifiedManager,
+      @Nullable AbstractArrayFormulaManager<TFormulaInfo, TType, TEnv, TFuncDecl> arrayManager) {
+    this(
+        pFormulaCreator,
+        functionManager,
+        booleanManager,
+        pIntegerManager,
+        pRationalManager,
+        bitvectorManager,
+        floatingPointManager,
+        quantifiedManager,
+        arrayManager,
+        null);
   }
 
   public final FormulaCreator<TFormulaInfo, TType, TEnv, TFuncDecl> getFormulaCreator() {
@@ -225,6 +253,15 @@ public abstract class AbstractFormulaManager<TFormulaInfo, TType, TEnv, TFuncDec
       throw new UnsupportedOperationException("Solver does not support arrays");
     }
     return arrayManager;
+  }
+
+  @Override
+  public StringFormulaManager getStringFormulaManager() {
+    if (stringManager == null) {
+      throw new UnsupportedOperationException("Solver does not support strings");
+    }
+
+    return stringManager;
   }
 
   public abstract Appender dumpFormula(TFormulaInfo t);
@@ -375,6 +412,9 @@ public abstract class AbstractFormulaManager<TFormulaInfo, TType, TEnv, TFuncDec
     } else if (formulaType.isArrayType()) {
       assert arrayManager != null;
       t = arrayManager.makeArray(name, (ArrayFormulaType<?, ?>) formulaType);
+    } else if (formulaType.isStringType()) {
+      assert stringManager != null;
+      t = stringManager.makeVariable(name);
     } else {
       throw new IllegalArgumentException("Unknown formula type");
     }

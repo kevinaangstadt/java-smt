@@ -198,6 +198,16 @@ class PrincessFormulaCreator
     return SimpleArray.ArraySort$.MODULE$.apply(1);
   }
 
+  @Override
+  public Sort getStringType() {
+    throw new UnsupportedOperationException("Does not support string theory");
+  }
+
+  @Override
+  public Sort getRegexType() {
+    throw new UnsupportedOperationException("Does not support string theory");
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public <T extends Formula> FormulaType<T> getFormulaType(final T pFormula) {

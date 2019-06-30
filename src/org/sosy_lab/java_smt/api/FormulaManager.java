@@ -83,6 +83,13 @@ public interface FormulaManager {
   QuantifiedFormulaManager getQuantifiedFormulaManager();
 
   /**
+   * Returns the interface for handling quantifiers.
+   *
+   * @throws UnsupportedOperationException If the theory is not supported by the solver.
+   */
+  StringFormulaManager getStringFormulaManager();
+
+  /**
    * Create variable of the type equal to {@code formulaType}.
    *
    * @param formulaType the type of the variable.

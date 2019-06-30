@@ -111,6 +111,16 @@ class SmtInterpolFormulaCreator
     return getEnv().getTheory().getSort("Array", pIndexType, pElementType);
   }
 
+  @Override
+  public Sort getStringType() {
+    throw new UnsupportedOperationException("Does not support string theory");
+  }
+
+  @Override
+  public Sort getRegexType() {
+    throw new UnsupportedOperationException("Does not support string theory");
+  }
+
   /** convert a boolean or numeral term into an object of type Boolean, BigInteger, or Rational. */
   @Override
   public Object convertValue(Term value) {
