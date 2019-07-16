@@ -190,6 +190,14 @@ public abstract class AbstractStringFormulaManager<TFormulaInfo, TType, TEnv, TF
 
   protected abstract TFormulaInfo regexUnion(TFormulaInfo pRegex1, TFormulaInfo pRegex2);
 
+
+  @Override
+  public RegexFormula regexComp(RegexFormula pRegex1) {
+    return wrapRegex(regexComp(extractInfo(pRegex1)));
+  }
+
+  protected abstract TFormulaInfo regexComp(TFormulaInfo pRegex1);
+
   @Override
   public RegexFormula regexRange(StringFormula pStart, StringFormula pEnd) {
     return wrapRegex(regexRange(extractInfo(pStart), extractInfo(pEnd)));
@@ -203,5 +211,19 @@ public abstract class AbstractStringFormulaManager<TFormulaInfo, TType, TEnv, TF
   }
 
   protected abstract TFormulaInfo strInRegex(TFormulaInfo pString, TFormulaInfo pRegex);
+
+  @Override
+  public RegexFormula regexEmpty() {
+    return wrapRegex(regexEmptyImpl());
+  }
+
+  protected abstract TFormulaInfo regexEmptyImpl();
+
+  @Override
+  public RegexFormula regexAll() {
+    return wrapRegex(regexAllImpl());
+  }
+
+  protected abstract TFormulaInfo regexAllImpl();
 
 }

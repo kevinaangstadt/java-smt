@@ -92,6 +92,12 @@ final class Z3SolverContext extends AbstractSolverContext {
     @FileOption(Type.OUTPUT_FILE)
     @Nullable
     Path log = null;
+
+    @Option(
+      secure = true,
+      description = "Solver for string theory queries",
+      values = {"seq", "z3str3"})
+    String stringSolver = "z3str";
   }
 
   @SuppressWarnings("checkstyle:parameternumber")
@@ -166,6 +172,8 @@ final class Z3SolverContext extends AbstractSolverContext {
     if (extraOptions.requireProofs) {
       Native.setParamValue(cfg, "PROOF", "true");
     }
+
+    Native.globalParamSet("smt.string_solver", extraOptions.stringSolver);
     Native.globalParamSet("smt.random_seed", String.valueOf(randomSeed));
 
     final long context = Native.mkContextRc(cfg);

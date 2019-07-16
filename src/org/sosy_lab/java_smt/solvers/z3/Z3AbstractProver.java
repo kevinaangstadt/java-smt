@@ -73,6 +73,9 @@ abstract class Z3AbstractProver<T> extends AbstractProverWithAllSat<T> {
     Preconditions.checkState(!closed);
     int result;
     try {
+      System.out.println("========");
+      System.out.println(toString());
+      System.out.println("========");
       result = Native.solverCheck(z3context, z3solver);
     } catch (Z3Exception e) {
       throw creator.handleZ3Exception(e);

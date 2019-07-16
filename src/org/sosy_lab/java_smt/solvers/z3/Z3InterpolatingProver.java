@@ -25,19 +25,13 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.primitives.Longs;
 import com.microsoft.z3.Native;
-import com.microsoft.z3.Z3Exception;
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.sosy_lab.common.io.IO;
 import org.sosy_lab.common.io.PathCounterTemplate;
 import org.sosy_lab.common.log.LogManager;
 import org.sosy_lab.java_smt.api.BooleanFormula;
@@ -175,87 +169,90 @@ class Z3InterpolatingProver extends Z3AbstractProver<Long>
       List<? extends Collection<Long>> partitionedFormulas,
       int[] startOfSubTree,
       final long[] conjunctionFormulas) {
-    final long[] interpolationFormulas = new long[partitionedFormulas.size()];
-    final Deque<Z3TreeInterpolant> stack = new ArrayDeque<>();
+    throw new UnsupportedOperationException("z3 no longer supports interpolation");
 
-    int lastSubtree = -1; // subtree starts with 0. With -1<0 we start a new subtree.
-    for (int i = 0; i < startOfSubTree.length; i++) {
-      final int currentSubtree = startOfSubTree[i];
-      final long conjunction;
-      if (currentSubtree > lastSubtree) {
-        // start of a new subtree -> first element has no children
-        conjunction = conjunctionFormulas[i];
-
-      } else { // if (currentSubtree <= lastSubtree) {
-        // merge-point in tree, several children at a node -> pop from stack and conjunct
-        final Deque<Long> children = new ArrayDeque<>();
-        while (!stack.isEmpty() && currentSubtree <= stack.peek().getRootOfTree()) {
-          // adding at front is important for tree-structure!
-          children.addFirst(stack.pop().getInterpolationPoint());
-        }
-        children.add(conjunctionFormulas[i]); // add the node itself
-        conjunction = Native.mkAnd(z3context, children.size(), Longs.toArray(children));
-      }
-
-      final long interpolationPoint;
-      if (i == startOfSubTree.length - 1) {
-        // the last node in the tree (=root) does not need the interpolation-point-flag
-        interpolationPoint = conjunction;
-        Preconditions.checkState(currentSubtree == 0, "subtree of root should start at 0.");
-        Preconditions.checkState(stack.isEmpty(), "root should be the last element in the stack.");
-      } else {
-        interpolationPoint = Native.mkInterpolant(z3context, conjunction);
-      }
-
-      Native.incRef(z3context, interpolationPoint);
-      interpolationFormulas[i] = interpolationPoint;
-      stack.push(new Z3TreeInterpolant(currentSubtree, interpolationPoint));
-      lastSubtree = currentSubtree;
-    }
-
-    Preconditions.checkState(
-        stack.peek().getRootOfTree() == 0, "subtree of root should start at 0.");
-    long root = stack.pop().getInterpolationPoint();
-    Preconditions.checkState(
-        root == interpolationFormulas[interpolationFormulas.length - 1],
-        "subtree of root should start at 0.");
-    Preconditions.checkState(
-        stack.isEmpty(), "root should have been the last element in the stack.");
-
-    return interpolationFormulas;
+    // final long[] interpolationFormulas = new long[partitionedFormulas.size()];
+    // final Deque<Z3TreeInterpolant> stack = new ArrayDeque<>();
+    //
+    // int lastSubtree = -1; // subtree starts with 0. With -1<0 we start a new subtree.
+    // for (int i = 0; i < startOfSubTree.length; i++) {
+    // final int currentSubtree = startOfSubTree[i];
+    // final long conjunction;
+    // if (currentSubtree > lastSubtree) {
+    // // start of a new subtree -> first element has no children
+    // conjunction = conjunctionFormulas[i];
+    //
+    // } else { // if (currentSubtree <= lastSubtree) {
+    // // merge-point in tree, several children at a node -> pop from stack and conjunct
+    // final Deque<Long> children = new ArrayDeque<>();
+    // while (!stack.isEmpty() && currentSubtree <= stack.peek().getRootOfTree()) {
+    // // adding at front is important for tree-structure!
+    // children.addFirst(stack.pop().getInterpolationPoint());
+    // }
+    // children.add(conjunctionFormulas[i]); // add the node itself
+    // conjunction = Native.mkAnd(z3context, children.size(), Longs.toArray(children));
+    // }
+    //
+    // final long interpolationPoint;
+    // if (i == startOfSubTree.length - 1) {
+    // // the last node in the tree (=root) does not need the interpolation-point-flag
+    // interpolationPoint = conjunction;
+    // Preconditions.checkState(currentSubtree == 0, "subtree of root should start at 0.");
+    // Preconditions.checkState(stack.isEmpty(), "root should be the last element in the stack.");
+    // } else {
+    // interpolationPoint = Native.mkInterpolant(z3context, conjunction);
+    // }
+    //
+    // Native.incRef(z3context, interpolationPoint);
+    // interpolationFormulas[i] = interpolationPoint;
+    // stack.push(new Z3TreeInterpolant(currentSubtree, interpolationPoint));
+    // lastSubtree = currentSubtree;
+    // }
+    //
+    // Preconditions.checkState(
+    // stack.peek().getRootOfTree() == 0, "subtree of root should start at 0.");
+    // long root = stack.pop().getInterpolationPoint();
+    // Preconditions.checkState(
+    // root == interpolationFormulas[interpolationFormulas.length - 1],
+    // "subtree of root should start at 0.");
+    // Preconditions.checkState(
+    // stack.isEmpty(), "root should have been the last element in the stack.");
+    //
+    // return interpolationFormulas;
   }
 
   /** compute interpolants for the given tree of formulas and dump the interpolation problem. */
   private long computeInterpolants(final long root, final long proof)
       throws SolverException, InterruptedException {
     long interpolationResult;
-    try {
-      interpolationResult =
-          Native.getInterpolant(
-              z3context,
-              proof, // refutation of premises := proof
-              root, // last element is end of chain (root of tree), pattern := interpolation tree
-              Native.mkParams(z3context));
-    } catch (Z3Exception e) {
-      if (dumpFailedInterpolationQueries != null && !creator.shutdownNotifier.shouldShutdown()) {
-        try (Writer dumpFile =
-            IO.openOutputFile(
-                dumpFailedInterpolationQueries.getFreshPath(), StandardCharsets.UTF_8)) {
-          dumpFile.write(Native.solverToString(z3context, z3solver));
-          dumpFile.write("\n(compute-interpolant ");
-          dumpFile.write(Native.astToString(z3context, root));
-          dumpFile.write(")\n");
-        } catch (IOException e2) {
-          logger.logUserException(
-              Level.WARNING, e2, "Could not dump failed interpolation query to file");
-        }
-      }
-      if ("theory not supported by interpolation or bad proof".equals(e.getMessage())) {
-        throw new SolverException(e.getMessage(), e);
-      }
-      throw creator.handleZ3Exception(e);
-    }
-    return interpolationResult;
+    throw new UnsupportedOperationException("z3 doesn't support interpolation in this version");
+    // try {
+    //// interpolationResult =
+    //// Native.getInterpolant(
+    //// z3context,
+    //// proof, // refutation of premises := proof
+    //// root, // last element is end of chain (root of tree), pattern := interpolation tree
+    //// Native.mkParams(z3context));
+    // } catch (Z3Exception e) {
+    // if (dumpFailedInterpolationQueries != null && !creator.shutdownNotifier.shouldShutdown()) {
+    // try (Writer dumpFile =
+    // IO.openOutputFile(
+    // dumpFailedInterpolationQueries.getFreshPath(), StandardCharsets.UTF_8)) {
+    // dumpFile.write(Native.solverToString(z3context, z3solver));
+    // dumpFile.write("\n(compute-interpolant ");
+    // dumpFile.write(Native.astToString(z3context, root));
+    // dumpFile.write(")\n");
+    // } catch (IOException e2) {
+    // logger.logUserException(
+    // Level.WARNING, e2, "Could not dump failed interpolation query to file");
+    // }
+    // }
+    // if ("theory not supported by interpolation or bad proof".equals(e.getMessage())) {
+    // throw new SolverException(e.getMessage(), e);
+    // }
+    // throw creator.handleZ3Exception(e);
+    // }
+    // return interpolationResult;
   }
 
   /**

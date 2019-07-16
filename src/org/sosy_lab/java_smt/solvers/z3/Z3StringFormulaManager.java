@@ -130,6 +130,11 @@ public class Z3StringFormulaManager extends AbstractStringFormulaManager<Long, L
   }
 
   @Override
+  protected Long regexComp(Long pRegex1) {
+    return Native.mkReComplement(z3context, pRegex1);
+  }
+
+  @Override
   protected Long regexRange(Long pStart, Long pEnd) {
     return Native.mkReRange(z3context, pStart, pEnd);
   }
@@ -137,5 +142,15 @@ public class Z3StringFormulaManager extends AbstractStringFormulaManager<Long, L
   @Override
   protected Long strInRegex(Long pString, Long pRegex) {
     return Native.mkSeqInRe(z3context, pString, pRegex);
+  }
+
+  @Override
+  protected Long regexEmptyImpl() {
+    return Native.mkReEmpty(z3context, getFormulaCreator().getRegexType());
+  }
+
+  @Override
+  protected Long regexAllImpl() {
+    return Native.mkReFull(z3context, getFormulaCreator().getRegexType());
   }
 }

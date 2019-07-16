@@ -189,6 +189,14 @@ public interface StringFormulaManager {
   RegexFormula regexUnion(RegexFormula pRegex1, RegexFormula pRegex2);
 
   /**
+   * Regex complement
+   *
+   * @param pRegex1 first regex
+   * @return !R_1
+   */
+  RegexFormula regexComp(RegexFormula pRegex1);
+
+  /**
    * Make a regular expression character class range
    *
    * @param pStart the starting character
@@ -214,4 +222,18 @@ public interface StringFormulaManager {
    * @return A formula that represents the result of the equality check
    */
   BooleanFormula equal(StringFormula pString1, StringFormula pString2);
+
+  /**
+   * Make an empty regular expression
+   *
+   * @return A formula that matches nothing
+   */
+  RegexFormula regexEmpty();
+
+  /**
+   * Make a regular expression that matches everything
+   *
+   * @return A formula that matches everything
+   */
+  RegexFormula regexAll();
 }

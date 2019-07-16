@@ -407,6 +407,12 @@ class Z3FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
                   == Z3_sort_kind.Z3_ROUNDING_MODE_SORT.toInt()) {
             return visitor.visitConstant(formula, convertValue(f));
 
+          } else if (declKind == Z3_decl_kind.Z3_OP_INTERNAL.toInt()
+              && Native.getSortKind(
+                  environment,
+                  Native.getSort(environment, f)) == Z3_sort_kind.Z3_SEQ_SORT.toInt()) {
+            // this is likely a string constant
+            return visitor.visitConstant(formula, convertValue(f));
           } else {
 
             // Has to be a variable otherwise.
@@ -542,9 +548,10 @@ class Z3FormulaCreator extends FormulaCreator<Long, Long, Long, Long> {
         throw new UnsupportedOperationException("Unexpected state: constants not expected");
       case Z3_OP_OEQ:
         throw new UnsupportedOperationException("Unexpected state: not a proof");
-      case Z3_OP_INTERP:
-        // TODO: should we treat those separately?
-        throw new UnsupportedOperationException("Unexpected state: interpolant marks not expected");
+        // case Z3_OP_INTERP:
+        // // TODO: should we treat those separately?
+        // throw new UnsupportedOperationException("Unexpected state: interpolant marks not
+        // expected");
       case Z3_OP_UMINUS:
         return FunctionDeclarationKind.UMINUS;
       case Z3_OP_IDIV:
