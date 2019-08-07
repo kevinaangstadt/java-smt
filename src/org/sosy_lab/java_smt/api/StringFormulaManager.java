@@ -39,6 +39,13 @@ public interface StringFormulaManager {
   StringFormula makeString(String pString);
 
   /**
+   *
+   * @param pFormula a bitvector formula
+   * @return a singlton character string represented by the bv
+   */
+  StringFormula unit(BitvectorFormula pFormula);
+
+  /**
    * Declare a new string variable
    *
    * @param pName the variable's name

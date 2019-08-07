@@ -21,6 +21,7 @@ package org.sosy_lab.java_smt.basicimpl;
 
 import static org.sosy_lab.java_smt.basicimpl.AbstractFormulaManager.checkVariableName;
 
+import org.sosy_lab.java_smt.api.BitvectorFormula;
 import org.sosy_lab.java_smt.api.BooleanFormula;
 import org.sosy_lab.java_smt.api.NumeralFormula;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
@@ -45,6 +46,10 @@ public abstract class AbstractStringFormulaManager<TFormulaInfo, TType, TEnv, TF
     return getFormulaCreator().encapsulateInteger(formulaInfo);
   }
 
+  private BitvectorFormula wrapBV(TFormulaInfo formulaInfo) {
+    return getFormulaCreator().encapsulateBitvector(formulaInfo);
+  }
+
   private RegexFormula wrapRegex(TFormulaInfo formulaInfo) {
     return getFormulaCreator().encapsulateRegex(formulaInfo);
   }
@@ -63,6 +68,13 @@ public abstract class AbstractStringFormulaManager<TFormulaInfo, TType, TEnv, TF
   }
 
   protected abstract TFormulaInfo internalMakeString(String pName);
+
+  @Override
+  public StringFormula unit(BitvectorFormula pFormula) {
+    return wrap(unit(extractInfo(pFormula)));
+  }
+
+  protected abstract TFormulaInfo unit(TFormulaInfo pFormula);
 
   @Override
   public StringFormula concat(StringFormula pString1, StringFormula pString2) {

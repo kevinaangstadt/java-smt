@@ -36,6 +36,11 @@ public class Z3StringFormulaManager extends AbstractStringFormulaManager<Long, L
   }
 
   @Override
+  protected Long unit(Long pFormula) {
+    return Native.mkSeqUnit(z3context, pFormula);
+  }
+
+  @Override
   protected Long makeVariableImpl(String pName) {
     long type = getFormulaCreator().getStringType();
     return getFormulaCreator().makeVariable(type, pName);
