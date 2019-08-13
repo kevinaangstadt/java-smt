@@ -73,6 +73,16 @@ public class Z3StringFormulaManager extends AbstractStringFormulaManager<Long, L
   }
 
   @Override
+  protected Long lt(Long pParam1, Long pParam2) {
+    return Native.mkStrLt(z3context, pParam1, pParam2);
+  }
+
+  @Override
+  protected Long lte(Long pParam1, Long pParam2) {
+    return Native.mkStrLe(z3context, pParam1, pParam2);
+  }
+
+  @Override
   protected Long contains(Long pString, Long pSearch) {
     return Native.mkSeqContains(z3context, pString, pSearch);
   }

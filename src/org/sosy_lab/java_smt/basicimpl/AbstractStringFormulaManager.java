@@ -46,10 +46,6 @@ public abstract class AbstractStringFormulaManager<TFormulaInfo, TType, TEnv, TF
     return getFormulaCreator().encapsulateInteger(formulaInfo);
   }
 
-  private BitvectorFormula wrapBV(TFormulaInfo formulaInfo) {
-    return getFormulaCreator().encapsulateBitvector(formulaInfo);
-  }
-
   private RegexFormula wrapRegex(TFormulaInfo formulaInfo) {
     return getFormulaCreator().encapsulateRegex(formulaInfo);
   }
@@ -116,6 +112,26 @@ public abstract class AbstractStringFormulaManager<TFormulaInfo, TType, TEnv, TF
   }
 
   protected abstract TFormulaInfo equal(TFormulaInfo pParam1, TFormulaInfo pParam2);
+
+  @Override
+  public BooleanFormula lt(StringFormula pString1, StringFormula pString2) {
+    TFormulaInfo param1 = extractInfo(pString1);
+    TFormulaInfo param2 = extractInfo(pString2);
+
+    return wrapBool(lt(param1, param2));
+  }
+
+  protected abstract TFormulaInfo lt(TFormulaInfo pParam1, TFormulaInfo pParam2);
+
+  @Override
+  public BooleanFormula lte(StringFormula pString1, StringFormula pString2) {
+    TFormulaInfo param1 = extractInfo(pString1);
+    TFormulaInfo param2 = extractInfo(pString2);
+
+    return wrapBool(lt(param1, param2));
+  }
+
+  protected abstract TFormulaInfo lte(TFormulaInfo pParam1, TFormulaInfo pParam2);
 
   @Override
   public BooleanFormula contains(StringFormula pString, StringFormula pSearch) {

@@ -231,6 +231,24 @@ public interface StringFormulaManager {
   BooleanFormula equal(StringFormula pString1, StringFormula pString2);
 
   /**
+   * Determine if one string is Lexicographically less than another
+   *
+   * @param pString1 the first string
+   * @param pString2 the second string
+   * @return a formula representing the < property
+   */
+  BooleanFormula lt(StringFormula pString1, StringFormula pString2);
+
+  /**
+   * Determine if one string is Lexicographically less than or equal to another
+   *
+   * @param pString1 the first string
+   * @param pString2 the second string
+   * @return a formula representing the <= property
+   */
+  BooleanFormula lte(StringFormula pString1, StringFormula pString2);
+
+  /**
    * Make an empty regular expression
    *
    * @return A formula that matches nothing
